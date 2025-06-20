@@ -1,0 +1,10 @@
+{
+  "services": [
+    "user",
+    "catalog",
+    "order",
+    "payment",
+    "notify",
+    "analytics"
+  ]
+}
