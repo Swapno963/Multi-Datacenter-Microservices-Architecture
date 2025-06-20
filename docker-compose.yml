@@ -1,0 +1,74 @@
+version: '3.8'
+
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.gateway-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./Configs/nginx/:/usr/share/nginx/html
+  user:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.user-nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/service-responses/user-nginx/:/usr/share/nginx/html/
+
+  catalog:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.catalog-nginx
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data/service-responses/catalog-nginx/:/usr/share/nginx/html/
+
+  order:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.order-nginx
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./data/service-responses/order-nginx/:/usr/share/nginx/html/
+
+  payment:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.payment-nginx
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./data/service-responses/payment-nginx/:/usr/share/nginx/html/
+
+  notify:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.notify-nginx
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./data/service-responses/notify-nginx/:/usr/share/nginx/html/
+
+  analytics:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.analytics-nginx
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./data/service-responses/analytics-nginx/:/usr/share/nginx/html/
+
+  discovery:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.discovery-nginx
+    ports:
+      - "8500:8500"
+    volumes:
+      - ./data/service-responses/discovery-nginx/:/usr/share/nginx/html/
