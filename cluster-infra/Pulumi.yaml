@@ -1,0 +1,11 @@
+name: Multi-DataCenter-Microservice
+description: Designed and implemented a multi-datacenter microservices platform using Docker containers, VXLAN networking, and automation through Makefiles.
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-python
