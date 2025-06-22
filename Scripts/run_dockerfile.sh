@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e  # Optional: stop on first error
+
 
 # Get DC info from instance metadata tag (example)
 DC_NAME=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)
