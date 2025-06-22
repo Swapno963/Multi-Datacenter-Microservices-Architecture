@@ -116,7 +116,7 @@ instances = []
 private_ip_outputs = []
 
 
-def update_line_and_store(file_path, match_string, new_line, id):
+def update_line_and_store(file_path, match_string, new_line, id, docker_unique_id):
     with open(file_path, "r") as file:
         lines = file.readlines()
 
@@ -126,8 +126,11 @@ def update_line_and_store(file_path, match_string, new_line, id):
             updated_lines.append(new_line + "\n")
         elif "VXLAN_ID='X'" in line:
             updated_lines.append(f'VXLAN_ID="{id}" ' + "\n")
+        elif "STATIC_IP='172.18.0.11'" in line:
+            updated_lines.append(f'STATIC_IP="{docker_unique_id}" ' + "\n")
 
         else:
+
             updated_lines.append(line)
 
     # Join the updated lines into a single string variable
@@ -173,7 +176,8 @@ for dc in dc_configs:
 # Now, use pulumi.Output.all to get all private IPs once they are known
 all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
 
-vxlan_ids = [200, 300, 400]
+vxlan_ids = [200, 200, 200]
+docker_unique_ids = ["172.18.0.3", "172.18.0.4", "172.18.0.5"]
 for i, instance in enumerate(instances):
     own_ip_output = private_ip_outputs[i]
     replace_string = (
@@ -188,6 +192,7 @@ for i, instance in enumerate(instances):
             "REMOTE_IPS=('x.x.x.x')",
             replace_string,
             vxlan_ids[i],
+            docker_unique_ids[i],
         )
     )
 
