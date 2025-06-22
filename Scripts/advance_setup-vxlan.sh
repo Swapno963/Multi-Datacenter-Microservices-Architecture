@@ -4,7 +4,7 @@ set -e  # Optional: stop on first error
 # Set variables
 NETWORK_NAME="vxlan-net"
 SUBNET="172.18.0.0/16"
-STATIC_IP="172.18.0.11"
+STATIC_IP='172.18.0.11'
 IMAGE_NAME="ubuntu"
 CONTAINER_NAME="ubuntu-static-ip"
 
