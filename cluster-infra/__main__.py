@@ -116,7 +116,7 @@ instances = []
 private_ip_outputs = []
 
 
-def update_line_and_store(file_path, match_string, new_line):
+def update_line_and_store(file_path, match_string, new_line, id):
     with open(file_path, "r") as file:
         lines = file.readlines()
 
@@ -124,6 +124,9 @@ def update_line_and_store(file_path, match_string, new_line):
     for line in lines:
         if match_string in line:
             updated_lines.append(new_line + "\n")
+        elif "VXLAN_ID='X'" in line:
+            updated_lines.append(f'VXLAN_ID="{id}" ' + "\n")
+
         else:
             updated_lines.append(line)
 
@@ -170,7 +173,7 @@ for dc in dc_configs:
 # Now, use pulumi.Output.all to get all private IPs once they are known
 all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
 
-
+vxlan_ids = [200, 300, 400]
 for i, instance in enumerate(instances):
     own_ip_output = private_ip_outputs[i]
     replace_string = (
@@ -184,6 +187,7 @@ for i, instance in enumerate(instances):
             "../Scripts/advance_setup-vxlan.sh",
             "REMOTE_IPS=('x.x.x.x')",
             replace_string,
+            vxlan_ids[i],
         )
     )
 
