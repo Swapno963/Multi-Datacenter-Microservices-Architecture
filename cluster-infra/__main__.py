@@ -167,21 +167,47 @@ for dc in dc_configs:
         instance.private_ip
     )  # Store the Output[str] for private_ip
 
-    # Now, use pulumi.Output.all to get all private IPs once they are known
-    all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
-
-    replace_string = (
-        "REMOTE_IPS=(" + " ".join(f'"{ip}"' for ip in private_ip_outputs) + ")"
-    )
-    dynamic_user_data = update_line_and_store(
-        "../Scripts/advance_setup-vxlan.sh", "REMOTE_IPS=('x.x.x.x')", replace_string
-    )
+# Now, use pulumi.Output.all to get all private IPs once they are known
+all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
 
 
 for i, instance in enumerate(instances):
+    own_ip_output = private_ip_outputs[i]
+    replace_string = (
+        "REMOTE_IPS=("
+        + " ".join(f'"{ip}"' for ip in private_ip_outputs if ip != own_ip_output)
+        + ")"
+    )
+
+    user_data_output = pulumi.Output.all(own_ip_output, all_private_ips_output).apply(
+        lambda args: update_line_and_store(
+            "../Scripts/advance_setup-vxlan.sh",
+            "REMOTE_IPS=('x.x.x.x')",
+            replace_string,
+        )
+    )
+
+    final_instance = aws.ec2.Instance(
+        f"{dc_configs[i]['name']}-ec2-final",
+        ami=ami,
+        instance_type=instance_type,
+        subnet_id=instance.subnet_id,
+        key_name=key_name,
+        vpc_security_group_ids=[security_group.id],
+        associate_public_ip_address=True,
+        user_data=user_data_output,
+        tags={"Name": f"{dc_configs[i]['name']}-ec2"},
+    )
+
+    instances[i] = final_instance
+
+    # user_data_output = pulumi.Output.all(own_ip_output, all_ips_output).apply(
+    #     lambda args: make_script(args[0], args[1])
+    # )
+
     # Update the instance's user_data property.
     # When you use set_resource_property, Pulumi will track this as a dependency.
-    pulumi.set_resource_property(instance, "user_data", dynamic_user_data)
+    # pulumi.set_resource_property(instance, "user_data", dynamic_user_data)
 
 
 # Export the public IPs and private IPs of the instances
