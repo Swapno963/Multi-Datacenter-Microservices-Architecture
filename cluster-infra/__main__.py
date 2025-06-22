@@ -180,12 +180,13 @@ for i, instance in enumerate(instances):
     own_ip_output = instance.private_ip
     all_ips = pulumi.Output.all(*private_ip_outputs)
 
-    replace_string = (
-        "REMOTE_IPS=("
-        + " ".join(f'"{ip}"' for ip in all_ips if ip != own_ip_output)
-        + ")"
+    replace_string = pulumi.Output.all(all_ips, own_ip_output).apply(
+        lambda args: (
+            "REMOTE_IPS=("
+            + " ".join(f'"{ip}"' for ip in args[0] if ip != args[1])
+            + ")"
+        )
     )
-
     user_data_output = pulumi.Output.all(own_ip_output, all_ips).apply(
         lambda args: update_line_and_store(
             "../Scripts/advance_setup-vxlan.sh",
