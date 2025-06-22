@@ -91,14 +91,14 @@ dc_configs = [
     {
         "name": "dc1-primary-na",
         "cidr": "10.0.1.0/24",
-        "az": "us-east-1a",  # North America region (e.g., N. Virginia)
+        "az": "ap-southeast-1a",  # North America region (e.g., N. Virginia)
         "role": "Primary",
         "region": "North America",
     },
     {
         "name": "dc2-secondary-eu",
         "cidr": "10.0.2.0/24",
-        "az": "eu-central-1a",  # Europe region (e.g., Frankfurt)
+        "az": "ap-southeast-1a",  # Europe region (e.g., Frankfurt)
         "role": "Secondary",
         "region": "Europe",
     },
@@ -197,7 +197,7 @@ for i, instance in enumerate(instances):
     )
 
     final_instance = aws.ec2.Instance(
-        f"{dc_configs[i]['name']}-ec2-final",
+        f"{dc_configs[i]['name']}-ec2",
         ami=ami,
         instance_type=instance_type,
         subnet_id=instance.subnet_id,
@@ -206,6 +206,7 @@ for i, instance in enumerate(instances):
         associate_public_ip_address=True,
         user_data=user_data_output,
         tags={"Name": f"{dc_configs[i]['name']}-ec2"},
+        opts=pulumi.ResourceOptions(replace_on_changes=["user_data"]),
     )
 
     instances[i] = final_instance
