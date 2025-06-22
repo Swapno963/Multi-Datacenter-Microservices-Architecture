@@ -1,0 +1,17 @@
+# Pulumi
+.pulumi/
+*.bak
+*.backup
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS Files
+.DS_Store
+
+# Terraform (if used)
+*.tfstate
+*.tfstate.*
