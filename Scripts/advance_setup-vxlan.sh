@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # Optional: stop on first error
 
 # Set variables
 NETWORK_NAME="vxlan-net"
@@ -15,6 +16,15 @@ sudo apt install -y iproute2 docker.io git
 
 # Clone git repository 
 git clone https://github.com/Swapno963/Multi-Datacenter-Microservices-Architecture.git
+cd Multi-Datacenter-Microservices-Architecture
+
+
+if [ ! -f ./Scripts/run_dockerfile.sh ]; then
+    echo "Script not found!"
+    exit 1
+fi
+chmod +x ./Scripts/run_dockerfile.sh
+./Scripts/run_dockerfile.sh
 
 
 # Create network if not exists
@@ -57,12 +67,8 @@ sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}
 
 
 
-
-
-
-
 VXLAN_IF="vxlan0"
-REMOTE_IPS=('x.x.x.x')  
+REMOTE_IPS=('x.x.x.x')  # Dynamically replace with the IPs of other remote hosts
 
 # Create vxlan0 linked to the remote hosts
 sudo ip link add $VXLAN_IF type vxlan id 42 dev eth0 dstport 4789
