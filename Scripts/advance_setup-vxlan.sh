@@ -68,10 +68,11 @@ sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}
 
 
 VXLAN_IF="vxlan0"
+VXLAN_ID='X' # Replace with your desired VXLAN ID
 REMOTE_IPS=('x.x.x.x')  # Dynamically replace with the IPs of other remote hosts
 
 # Create vxlan0 linked to the remote hosts
-sudo ip link add $VXLAN_IF type vxlan id 42 dev eth0 dstport 4789
+sudo ip link add $VXLAN_IF type vxlan id $VXLAN_ID dev eth0 dstport 4789
 
 # Add FDB entries to know where to forward packets
 for ip in "${REMOTE_IPS[@]}"; do
