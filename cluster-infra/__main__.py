@@ -163,8 +163,6 @@ for dc in dc_configs:
         subnet_id=subnet.id,
         key_name=key_name,
         associate_public_ip_address=True,
-        # We'll set the user_data dynamically below using .apply()
-        user_data="placeholder",
         vpc_security_group_ids=[security_group.id],  # Attach the security group
         tags={"Name": f"{dc['name']}-ec2"},
     )
@@ -174,19 +172,21 @@ for dc in dc_configs:
     )  # Store the Output[str] for private_ip
 
 # Now, use pulumi.Output.all to get all private IPs once they are known
-all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
+# all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
 
 vxlan_ids = [200, 200, 200]
 docker_unique_ids = ["172.18.0.3", "172.18.0.4", "172.18.0.5"]
 for i, instance in enumerate(instances):
-    own_ip_output = private_ip_outputs[i]
+    own_ip_output = instance.private_ip
+    all_ips = pulumi.Output.all(*private_ip_outputs)
+
     replace_string = (
         "REMOTE_IPS=("
-        + " ".join(f'"{ip}"' for ip in private_ip_outputs if ip != own_ip_output)
+        + " ".join(f'"{ip}"' for ip in all_ips if ip != own_ip_output)
         + ")"
     )
 
-    user_data_output = pulumi.Output.all(own_ip_output, all_private_ips_output).apply(
+    user_data_output = pulumi.Output.all(own_ip_output, all_ips).apply(
         lambda args: update_line_and_store(
             "../Scripts/advance_setup-vxlan.sh",
             "REMOTE_IPS=('x.x.x.x')",
@@ -206,7 +206,7 @@ for i, instance in enumerate(instances):
         associate_public_ip_address=True,
         user_data=user_data_output,
         tags={"Name": f"{dc_configs[i]['name']}-ec2"},
-        opts=pulumi.ResourceOptions(replace_on_changes=["user_data"]),
+        # opts=pulumi.ResourceOptions(replace_on_changes=["user_data"]),
     )
 
     instances[i] = final_instance
