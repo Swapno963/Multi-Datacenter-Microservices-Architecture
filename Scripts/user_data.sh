@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e  # stop on first error
 
+
+exec > /var/log/user-data.log 2>&1
+set -xe
+
 # Set variables
 NETWORK_NAME="vxlan-net"
 SUBNET="172.18.0.0/16"
@@ -14,10 +18,14 @@ sudo apt install -y iproute2 docker.io git
 
 
 
-# Clone git repository 
-git clone https://github.com/Swapno963/Multi-Datacenter-Microservices-Architecture.git
-cd Multi-Datacenter-Microservices-Architecture
 
+# Clone repo if not exists
+REPO_DIR="/home/ubuntu/Multi-Datacenter-Microservices-Architecture"
+if [ ! -d "$REPO_DIR" ]; then
+    git clone https://github.com/Swapno963/Multi-Datacenter-Microservices-Architecture.git "$REPO_DIR"
+fi
+
+cd "$REPO_DIR"
 
 if [ ! -f ./Scripts/run_dockerfile.sh ]; then
     echo "Script not found!"
