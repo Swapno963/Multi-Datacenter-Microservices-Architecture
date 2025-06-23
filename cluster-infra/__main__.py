@@ -176,49 +176,6 @@ for dc in dc_configs:
 
 vxlan_ids = [200, 200, 200]
 docker_unique_ids = ["172.18.0.3", "172.18.0.4", "172.18.0.5"]
-for i, instance in enumerate(instances):
-    own_ip_output = instance.private_ip
-    all_ips = pulumi.Output.all(*private_ip_outputs)
-
-    replace_string = pulumi.Output.all(all_ips, own_ip_output).apply(
-        lambda args: (
-            "REMOTE_IPS=("
-            + " ".join(f'"{ip}"' for ip in args[0] if ip != args[1])
-            + ")"
-        )
-    )
-    user_data_output = pulumi.Output.all(own_ip_output, all_ips).apply(
-        lambda args: update_line_and_store(
-            "../Scripts/advance_setup-vxlan.sh",
-            "REMOTE_IPS=('x.x.x.x')",
-            replace_string,
-            vxlan_ids[i],
-            docker_unique_ids[i],
-        )
-    )
-
-    final_instance = aws.ec2.Instance(
-        f"{dc_configs[i]['name']}-ec2",
-        ami=ami,
-        instance_type=instance_type,
-        subnet_id=instance.subnet_id,
-        key_name=key_name,
-        vpc_security_group_ids=[security_group.id],
-        associate_public_ip_address=True,
-        user_data=user_data_output,
-        tags={"Name": f"{dc_configs[i]['name']}-ec2"},
-        # opts=pulumi.ResourceOptions(replace_on_changes=["user_data"]),
-    )
-
-    instances[i] = final_instance
-
-    # user_data_output = pulumi.Output.all(own_ip_output, all_ips_output).apply(
-    #     lambda args: make_script(args[0], args[1])
-    # )
-
-    # Update the instance's user_data property.
-    # When you use set_resource_property, Pulumi will track this as a dependency.
-    # pulumi.set_resource_property(instance, "user_data", dynamic_user_data)
 
 
 # Export the public IPs and private IPs of the instances
