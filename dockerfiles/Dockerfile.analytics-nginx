@@ -7,4 +7,4 @@ RUN rm /etc/nginx/ocnf.d/default.configuration
 COPY nginx.conf /etc/nginx/conf.d/nginx.conf
 
 # Conpy static json resources
-COPY ../data/service-responces/user.json /usr/share/nginx/html/user.json
+COPY ../data/sample-datasets/analytics.json /usr/share/nginx/html/analytics.json

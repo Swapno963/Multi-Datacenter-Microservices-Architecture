@@ -26,6 +26,10 @@ To check what are the containers running : docker ps
 
 to see logs :
 
+sudo cat /var/log/cloud-init-output.log
+
+sudo cat /var/log/user-data.log
+
 
 
 
