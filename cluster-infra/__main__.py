@@ -168,6 +168,12 @@ for dc in dc_configs:
         vpc_security_group_ids=[security_group.id],  # Attach the security group
         tags={"Name": f"{dc['name']}-ec2"},
         user_data=user_data_script,  # Use the user data script
+        metadata_options=aws.ec2.InstanceMetadataOptionsArgs(
+            http_endpoint="enabled",
+            http_tokens="optional",
+            http_put_response_hop_limit=1,
+            instance_metadata_tags="enabled",  # <--- Enable tags in metadata!
+        ),
     )
     instances.append(instance)
     private_ip_outputs.append(
@@ -183,10 +189,19 @@ for dc in dc_configs:
 
 # Export the public IPs and private IPs of the instances
 # This will show up in your `pulumi up` output
+# for i, instance in enumerate(instances):
+#     pulumi.export(f"instance_{i}_public_ip", instance.public_ip)
+#     pulumi.export(f"Connect with instance_{i}", f"    ssh -i MyKeyPair.pem ubuntu@{instance.public_ip}")
+#     pulumi.export(f"instance_{i}_private_ip", instance.private_ip)
+
+
 for i, instance in enumerate(instances):
+    # Export public IP and private IP normally
     pulumi.export(f"instance_{i}_public_ip", instance.public_ip)
-    pulumi.export(
-        f"Connect with instance_{i}",
-        f"    ssh -i MyKeyPair.pem ubuntu@{instance.public_ip}",
-    )
     pulumi.export(f"instance_{i}_private_ip", instance.private_ip)
+
+    # Export connection string with Name tag and public IP
+    connection_output = pulumi.Output.all(instance.tags, instance.public_ip).apply(
+        lambda args: f"# Connect to {args[0].get('Name', f'instance_{i}')}\nssh -i MyKeyPair.pem ubuntu@{args[1]}"
+    )
+    pulumi.export(f"connect_with_instance_{i}", connection_output)
