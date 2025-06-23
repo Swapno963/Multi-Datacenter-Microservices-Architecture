@@ -10,7 +10,7 @@ if [ "$#" -ne 2 ]; then
 fi
 
 
-VXLAN_IF="vxlan0"
+VXLAN_IF="vxlan-net"
 REMOTE_IPS=("$1" "$2")  # Dynamically replace with the IPs of other remote hosts
 VXLAN_ID="$3" # Replace with your desired VXLAN ID
 
