@@ -116,27 +116,8 @@ instances = []
 private_ip_outputs = []
 
 
-def update_line_and_store(file_path, match_string, new_line, id, docker_unique_id):
-    with open(file_path, "r") as file:
-        lines = file.readlines()
-
-    updated_lines = []
-    for line in lines:
-        if match_string in line:
-            updated_lines.append(new_line + "\n")
-        elif "VXLAN_ID='X'" in line:
-            updated_lines.append(f'VXLAN_ID="{id}" ' + "\n")
-        elif "STATIC_IP='172.18.0.11'" in line:
-            updated_lines.append(f'STATIC_IP="{docker_unique_id}" ' + "\n")
-
-        else:
-
-            updated_lines.append(line)
-
-    # Join the updated lines into a single string variable
-    result_script = "".join(updated_lines)
-    return result_script
-
+with open("Scripts/user_data.sh", "r") as f:
+    user_data_script = f.read()
 
 # --- 5. Create subnets, associate route table, and launch instances ---
 for dc in dc_configs:
@@ -165,6 +146,7 @@ for dc in dc_configs:
         associate_public_ip_address=True,
         vpc_security_group_ids=[security_group.id],  # Attach the security group
         tags={"Name": f"{dc['name']}-ec2"},
+        user_data=user_data_script,  # Use the user data script
     )
     instances.append(instance)
     private_ip_outputs.append(
