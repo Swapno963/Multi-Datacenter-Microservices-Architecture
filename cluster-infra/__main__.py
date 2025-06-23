@@ -4,7 +4,7 @@ import os
 
 instance_type = "t2.micro"
 ami = "ami-01811d4912b4ccb26"
-key_name = "cluster-key"
+key_name = "MyKeyPair"
 
 # Create a VPC
 vpc = aws.ec2.Vpc(
@@ -129,7 +129,8 @@ def update_line_and_store(file_path, docker_unique_id):
     for line in lines:
         if "STATIC_IP='172.18.0.11'" in line:
             updated_lines.append(f'STATIC_IP="{docker_unique_id}" ' + "\n")
-        updated_lines.append(line)
+        else:
+            updated_lines.append(line)
 
     # Join the updated lines into a single string variable
     result_script = "".join(updated_lines)
@@ -155,7 +156,7 @@ for dc in dc_configs:
 
     # The actual user_data will be set dynamically later
     user_data_script = update_line_and_store(
-        "Scripts/user_data.sh", dc["docker_unique_id"]
+        "../Scripts/user_data.sh", dc["docker_unique_id"]
     )
     instance = aws.ec2.Instance(
         f"{dc['name']}-ec2",
@@ -184,4 +185,8 @@ for dc in dc_configs:
 # This will show up in your `pulumi up` output
 for i, instance in enumerate(instances):
     pulumi.export(f"instance_{i}_public_ip", instance.public_ip)
+    pulumi.export(
+        f"Connect with instance_{i}",
+        f"    ssh -i MyKeyPair.pem ubuntu@{instance.public_ip}",
+    )
     pulumi.export(f"instance_{i}_private_ip", instance.private_ip)
