@@ -27,7 +27,7 @@ run_container() {
 
 case $DC_NAME in
 
-  "DC1")
+  "dc1-primary-na-ec2")
     # Gateway-Nginx
     run_container "gateway-nginx" "dockerfiles/Dockerfile.gateway-nginx" "80:80" "./Configs/nginx/:/usr/share/nginx/html" "gateway-nginx"
 
@@ -41,7 +41,7 @@ case $DC_NAME in
     run_container "catalog-nginx" "dockerfiles/Dockerfile.catalog-nginx" "8081:8081" "./data/service-responses/catalog-nginx/:/usr/share/nginx/html" "catalog-nginx"
     ;;
 
-  "DC2")
+  "dc2-secondary-eu-ec2")
     # Gateway-Nginx (backup)
     run_container "gateway-nginx-backup" "dockerfiles/Dockerfile.gateway-nginx" "80:80" "./Configs/nginx/:/usr/share/nginx/html" "gateway-nginx-backup"
 
@@ -55,7 +55,7 @@ case $DC_NAME in
     run_container "order-nginx-replica" "dockerfiles/Dockerfile.order-nginx" "8082:8082" "./data/service-responses/order-nginx/:/usr/share/nginx/html" "order-nginx-replica"
     ;;
 
-  "DC3")
+  "dc3-dr-ap-ec2")
     # All services (standby)
     for svc in gateway user order catalog payment notify analytics discovery; do
       run_container "$svc-standby" "dockerfiles/Dockerfile.$svc-nginx" "8500:8500" "./data/service-responses/$svc-nginx/:/usr/share/nginx/html" "$svc-standby"
