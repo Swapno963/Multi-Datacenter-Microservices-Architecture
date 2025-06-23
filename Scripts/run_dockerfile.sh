@@ -2,6 +2,9 @@
 set -e  # Optional: stop on first error
 
 
+exec > /var/log/user-data.log 2>&1
+set -xe
+
 # Get DC info from instance metadata tag (example)
 DC_NAME=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)
 
