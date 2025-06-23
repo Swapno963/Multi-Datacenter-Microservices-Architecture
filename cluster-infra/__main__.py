@@ -87,6 +87,8 @@ security_group = aws.ec2.SecurityGroup(
 # ]
 
 # --- 4. Define DCs/Subnets ---
+docker_unique_ids = ["172.18.0.3", "172.18.0.4", "172.18.0.5"]
+
 dc_configs = [
     {
         "name": "dc1-primary-na",
@@ -94,6 +96,7 @@ dc_configs = [
         "az": "ap-southeast-1a",  # North America region (e.g., N. Virginia)
         "role": "Primary",
         "region": "North America",
+        "docker_unique_id": docker_unique_ids[0],
     },
     {
         "name": "dc2-secondary-eu",
@@ -101,6 +104,7 @@ dc_configs = [
         "az": "ap-southeast-1a",  # Europe region (e.g., Frankfurt)
         "role": "Secondary",
         "region": "Europe",
+        "docker_unique_id": docker_unique_ids[1],
     },
     {
         "name": "dc3-dr-ap",
@@ -108,6 +112,7 @@ dc_configs = [
         "az": "ap-southeast-1a",  # Asia-Pacific region (e.g., Singapore)
         "role": "Disaster Recovery",
         "region": "Asia-Pacific",
+        "docker_unique_id": docker_unique_ids[2],
     },
 ]
 
@@ -116,8 +121,20 @@ instances = []
 private_ip_outputs = []
 
 
-with open("Scripts/user_data.sh", "r") as f:
-    user_data_script = f.read()
+def update_line_and_store(file_path, docker_unique_id):
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+
+    updated_lines = []
+    for line in lines:
+        if "STATIC_IP='172.18.0.11'" in line:
+            updated_lines.append(f'STATIC_IP="{docker_unique_id}" ' + "\n")
+        updated_lines.append(line)
+
+    # Join the updated lines into a single string variable
+    result_script = "".join(updated_lines)
+    return result_script
+
 
 # --- 5. Create subnets, associate route table, and launch instances ---
 for dc in dc_configs:
@@ -137,6 +154,9 @@ for dc in dc_configs:
     )
 
     # The actual user_data will be set dynamically later
+    user_data_script = update_line_and_store(
+        "Scripts/user_data.sh", dc["docker_unique_id"]
+    )
     instance = aws.ec2.Instance(
         f"{dc['name']}-ec2",
         instance_type=instance_type,
