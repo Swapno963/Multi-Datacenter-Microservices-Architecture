@@ -2,9 +2,17 @@
 set -e  # stop on first error
 
 
+
+# Check if exactly two IPs are provided
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <IP1> <IP2>"
+    exit 1
+fi
+
+
 VXLAN_IF="vxlan0"
-VXLAN_ID='X' # Replace with your desired VXLAN ID
-REMOTE_IPS=('x.x.x.x')  # Dynamically replace with the IPs of other remote hosts
+REMOTE_IPS=("$1" "$2")  # Dynamically replace with the IPs of other remote hosts
+VXLAN_ID="$3" # Replace with your desired VXLAN ID
 
 # Create vxlan0 linked to the remote hosts
 sudo ip link add $VXLAN_IF type vxlan id $VXLAN_ID dev eth0 dstport 4789
