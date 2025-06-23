@@ -174,8 +174,8 @@ for dc in dc_configs:
 # Now, use pulumi.Output.all to get all private IPs once they are known
 # all_private_ips_output = pulumi.Output.all(*private_ip_outputs)
 
-vxlan_ids = [200, 200, 200]
-docker_unique_ids = ["172.18.0.3", "172.18.0.4", "172.18.0.5"]
+# vxlan_ids = [200, 200, 200]
+# docker_unique_ids = ["172.18.0.3", "172.18.0.4", "172.18.0.5"]
 
 
 # Export the public IPs and private IPs of the instances
