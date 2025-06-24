@@ -21,6 +21,15 @@ pulumi login
 pulumi stack init dev
 pulumi config set aws:region us-east-1
 
+
+Create rsa key
+
+cd ~/.ssh/
+
+aws ec2 create-key-pair --key-name cluster-key --output text --query 'KeyMaterial' > cluster-key.id_rsa
+
+chmod 400 cluster-key.id_rsa
+
 # Run
 
 pulumi up
