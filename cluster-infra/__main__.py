@@ -202,6 +202,6 @@ for i, instance in enumerate(instances):
 
     # Export connection string with Name tag and public IP
     connection_output = pulumi.Output.all(instance.tags, instance.public_ip).apply(
-        lambda args: f"# Connect to {args[0].get('Name', f'instance_{i}')}\nssh -i MyKeyPair.pem ubuntu@{args[1]}"
+        lambda args: f"# Connect to {args[0].get('Name', f'instance_{i}')}\n ssh -i MyKeyPair.pem ubuntu@{args[1]}"
     )
     pulumi.export(f"connect_with_instance_{i}", connection_output)
