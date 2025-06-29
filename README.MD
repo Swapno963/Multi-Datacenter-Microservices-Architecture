@@ -26,10 +26,18 @@ Create rsa key
 
 cd ~/.ssh/
 
-aws ec2 create-key-pair --key-name cluster-key --output text --query 'KeyMaterial' > cluster-key.id_rsa
 
-chmod 400 cluster-key.id_rsa
 
-# Run
+aws ec2 create-key-pair \
+
+    --key-name MyKeyPair \
+
+    --query 'KeyMaterial' \
+
+    --output text > MyKeyPair.pem
+
+chmod 400 MyKeyPair.pem
+
+Run
 
 pulumi up
