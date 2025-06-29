@@ -25,14 +25,6 @@ if [ ! -d "$REPO_DIR" ]; then
     git clone https://github.com/Swapno963/Multi-Datacenter-Microservices-Architecture.git "$REPO_DIR"
 fi
 
-cd "$REPO_DIR"
-
-if [ ! -f ./Scripts/run_dockerfile.sh ]; then
-    echo "Script not found!"
-    exit 1
-fi
-chmod +x ./Scripts/run_dockerfile.sh
-./Scripts/run_dockerfile.sh
 
 
 # Create network if not exists
@@ -76,3 +68,11 @@ sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}
 
 
 
+cd "$REPO_DIR"
+
+if [ ! -f ./Scripts/run_dockerfile.sh ]; then
+    echo "Script not found!"
+    exit 1
+fi
+chmod +x ./Scripts/run_dockerfile.sh
+./Scripts/run_dockerfile.sh
