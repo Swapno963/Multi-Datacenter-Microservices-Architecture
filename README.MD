@@ -35,3 +35,13 @@ chmod 400 MyKeyPair.pem
 Run
 
 pulumi up
+
+
+
+
+
+
+
+After completing we need to connect to the ec2 instance
+cd Multi-Datacenter-Microservices-Architecture/cluster-infra
+ssh -i MyKeyPair.pem ubuntu@<PUBLIC IP>
