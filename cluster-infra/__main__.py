@@ -140,17 +140,17 @@ def update_line_and_store(file_path, docker_unique_id):
 
     # Create a subnet
 subnet = aws.ec2.Subnet(
-        f"{dc['name']}-subnet",
+        f"{dc_configs[0]['name']}-subnet",
         vpc_id=vpc.id,
-        cidr_block=dc["cidr"],
-        availability_zone=dc["az"],
+        cidr_block=dc_configs[0]["cidr"],
+        availability_zone=dc_configs[0]["az"],
         map_public_ip_on_launch=True,
-        tags={"Name": f"{dc['name']}-subnet"},
+        tags={"Name": f"{dc_configs[0]['name']}-subnet"},
     )
 
     # Associate the route table with the subnet
 route_table_association = aws.ec2.RouteTableAssociation(
-        f"{dc['name']}-rta", subnet_id=subnet.id, route_table_id=route_table.id
+        f"{dc_configs[0]['name']}-rta", subnet_id=subnet.id, route_table_id=route_table.id
     )
     
 # --- 5. Create subnets, associate route table, and launch instances ---
