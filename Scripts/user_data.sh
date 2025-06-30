@@ -68,11 +68,10 @@ sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}
 
 
 
-cd "$REPO_DIR"
-
-if [ ! -f ./Scripts/run_dockerfile.sh ]; then
+if [ ! -f "$REPO_DIR/Scripts/run_dockerfile.sh" ]; then
     echo "Script not found!"
     exit 1
 fi
-chmod +x ./Scripts/run_dockerfile.sh
-./Scripts/run_dockerfile.sh
+
+chmod +x "$REPO_DIR/Scripts/run_dockerfile.sh"
+"$REPO_DIR/Scripts/run_dockerfile.sh"
