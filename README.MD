@@ -37,7 +37,7 @@ Run
 pulumi up
 
 
-
+pulumi stack rm dev --force
 
 
 
