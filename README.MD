@@ -45,3 +45,10 @@ pulumi up
 After completing we need to connect to the ec2 instance
 cd Multi-Datacenter-Microservices-Architecture/cluster-infra
 ssh -i MyKeyPair.pem ubuntu@<PUBLIC IP>
+
+
+Go to this directory: /home/ubuntu/Multi-Datacenter-Microservices-Architecture/Configs/network
+make the script executable: sudo chmod +x vxlan-config.sh 
+run it with privet ip: ./vxlan-config.sh <PRIVET IP> <PRIVET IP> 42
+
+to see a container ip address : sudo docker inspect <CONTAINER ID> | grep IPAddress
