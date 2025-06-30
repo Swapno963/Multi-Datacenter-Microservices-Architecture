@@ -137,10 +137,9 @@ def update_line_and_store(file_path, docker_unique_id):
     return result_script
 
 
-# --- 5. Create subnets, associate route table, and launch instances ---
-for dc in dc_configs:
+
     # Create a subnet
-    subnet = aws.ec2.Subnet(
+subnet = aws.ec2.Subnet(
         f"{dc['name']}-subnet",
         vpc_id=vpc.id,
         cidr_block=dc["cidr"],
@@ -150,9 +149,13 @@ for dc in dc_configs:
     )
 
     # Associate the route table with the subnet
-    route_table_association = aws.ec2.RouteTableAssociation(
+route_table_association = aws.ec2.RouteTableAssociation(
         f"{dc['name']}-rta", subnet_id=subnet.id, route_table_id=route_table.id
     )
+    
+# --- 5. Create subnets, associate route table, and launch instances ---
+for dc in dc_configs:
+
 
     # The actual user_data will be set dynamically later
     user_data_script = update_line_and_store(
